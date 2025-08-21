@@ -19,13 +19,13 @@
 
 #### Login
 
-<img src="screenshots/login.jpeg" width="500" />
+<img src="screenshots/login.jpeg" width="50%" />
 
 #### Registro
 
-<img src="screenshots/registro.jpeg" width="500" />
+<img src="screenshots/registro.jpeg" width="50%" />
 
 #### Artículos
 
 Tabla CRUD de artículos:
-<img src="screenshots/crud-articulos.jpeg" width="500" />
+<img src="screenshots/crud-articulos.jpeg" width="50%" />
