@@ -1,8 +1,8 @@
-# Proyecto CRUD de Artículos y Login de Usuarios
+# CRUD de Artículos + Login de Usuarios
 
-Tecnologias: Stack MERN
+## Tecnologías: Stack MERN
 
-## Backend
+### Backend:
 
 - Realizamos una API REST con Node.js + Express
 - En dicha API manejamos CRUD de usuarios y artículos
@@ -12,20 +12,20 @@ Tecnologias: Stack MERN
 - Podemos alternar entre el modelo MongoDB o Local Storage
 - Protegemos rutas `/api/articulos` con autenticación
 
-## Frontend
+### Frontend:
 
 - Realizamos el frontend con React
 - Tenemos 3 páginas:
 
-### Login
+#### Login
 
-![Login](screenshots/login.jpeg)
+<img src="screenshots/login.jpeg" width="500" />
 
-### Registro
+#### Registro
 
-![Registro](screenshots/registro.jpeg)
+<img src="screenshots/registro.jpeg" width="500" />
 
-### Artículos
+#### Artículos
 
 Tabla CRUD de artículos:
-![Tabla CRUD Artículos](screenshots/crud-articulos.jpeg)
+<img src="screenshots/crud-articulos.jpeg" width="500" />
