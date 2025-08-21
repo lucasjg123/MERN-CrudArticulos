@@ -18,7 +18,7 @@ Frontend:
   - login
     ![Login](screenshots/login.jpeg)
   - registro
-    ![Registro](screenshots/registro.jpeg.jpeg)
+    ![Registro](screenshots/registro.jpeg)
   - articulos
     tabla CRUD de articulos
-    ![Tabla CRUD articulos](screenshots/crud-articulos.jpeg.jpeg)
+    ![Tabla CRUD articulos](screenshots/crud-articulos.jpeg)
