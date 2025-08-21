@@ -10,7 +10,7 @@
 - Usamos una arquitectura MVC
 - Con inyección de modelos
 - Podemos alternar entre el modelo MongoDB o Local Storage
-- Protegemos rutas `/api/articulos` con autenticación
+- Protegemos rutas `/api/articulos` con autenticación.
 
 ### Frontend:
 
