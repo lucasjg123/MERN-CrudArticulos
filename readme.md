@@ -28,4 +28,5 @@
 #### Artículos
 
 Tabla CRUD de artículos:
-<img src="screenshots/crud-articulos.jpeg" width="50%" />
+
+<img src="screenshots/crud-articulos.jpeg" width="500" />
