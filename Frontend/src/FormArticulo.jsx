@@ -1,23 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import "./FormArticulo.css";
 import { AuthContext } from "./ProveedorContexto";
 
-export const FormArticulo = ({ articuloPadre, onActualizarTabla }) => {
-  const [formulario, setFormulario] = useState({});
-  const [articuloEdit, setArticuloEdit] = useState(articuloPadre.articuloEdit);
-  const [editando, setEditando] = useState(articuloPadre.editando);
+export const FormArticulo = ({
+  articuloPadre,
+  onActualizarTabla,
+  onCancelarEdicion,
+}) => {
   const [auth] = useContext(AuthContext);
-
-  useEffect(() => {
-    if (articuloPadre.articuloEdit && articuloPadre.articuloEdit._id) {
-      setArticuloEdit(articuloPadre.articuloEdit);
-      setEditando(articuloPadre.editando);
-    }
-  }, [articuloPadre.articuloEdit]);
-
-  const cancelarEdicion = () => {
-    setEditando(false);
-  };
 
   const recogerForm = (e) => {
     e.preventDefault();
@@ -26,19 +16,17 @@ export const FormArticulo = ({ articuloPadre, onActualizarTabla }) => {
       cuerpo: e.target.cuerpo.value,
     };
 
-    setFormulario(articulo);
+    if (!articuloPadre.editando) {
+      guardarArticulo(articulo);
+    } else {
+      editarArticulo(articulo, articuloPadre.articuloEdit._id);
+    }
 
-    if (!editando) guardarArticulo(articulo);
-    else editarArticulo(articulo, articuloEdit._id);
-
-    e.target.titulo.value = "";
-    e.target.cuerpo.value = "";
-    setEditando(false);
+    e.target.reset();
   };
 
   const guardarArticulo = async (articulo) => {
     let articuloCompleto = { ...articulo, usuario: auth.nick };
-    console.log("articulo a enviar:", articuloCompleto);
     try {
       const peticion = await fetch(`http://localhost:1234/api/articulos`, {
         method: "POST",
@@ -49,21 +37,16 @@ export const FormArticulo = ({ articuloPadre, onActualizarTabla }) => {
         },
       });
 
-      const datos = await peticion.json();
-      console.log("resp del back:", datos);
-      // Si la creación fue exitosa, actualiza el estado local
       if (peticion.status === 201) {
-        onActualizarTabla(); // Actualizar la tabla después de guardar el artículo
+        onActualizarTabla();
       }
     } catch (e) {
       console.log(e);
-      setFormulario({});
     }
   };
 
   const editarArticulo = async (articulo, id) => {
     let articuloCompleto = { ...articulo, usuario: auth.nick };
-    console.log("articulo a enviar:", articuloCompleto);
     try {
       const peticion = await fetch(
         `http://localhost:1234/api/articulos/${id}`,
@@ -77,93 +60,76 @@ export const FormArticulo = ({ articuloPadre, onActualizarTabla }) => {
         }
       );
 
-      const datos = await peticion.json();
-      console.log("resp del back", datos);
       if (peticion.status === 200) {
-        onActualizarTabla(); // Actualizar la tabla después de editar el artículo
+        onActualizarTabla();
+        onCancelarEdicion();
       }
     } catch (e) {
       console.log(e);
-      setFormulario({});
     }
   };
 
   return (
-    <>
-      <div className="screen-1">
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="true"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet"
-        ></link>
-        <h2>INTRODUCE ARTÍCULO</h2>
-        {editando ? <h3 style={{ color: "red" }}>EDITANDO ARTICULO</h3> : ""}
-        <form onSubmit={recogerForm}>
-          <div className="titulo">
-            <label htmlFor="titulo">Título</label>
-            <div className="sec-2">
-              <span className="material-symbols-outlined">title</span>
-              {editando ? (
-                <input
-                  type="text"
-                  name="titulo"
-                  id="titulo"
-                  placeholder="Título"
-                  defaultValue={articuloEdit.titulo}
-                />
-              ) : (
-                <input
-                  type="text"
-                  name="titulo"
-                  id="titulo"
-                  placeholder="Título"
-                  defaultValue=""
-                />
-              )}
-            </div>
+    <div className="screen-1">
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0"
+      />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossOrigin="true"
+      />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet"
+      ></link>
+      <h2>INTRODUCE ARTÍCULO</h2>
+      {articuloPadre.editando && (
+        <h3 style={{ color: "red" }}>EDITANDO ARTICULO</h3>
+      )}
+
+      <form onSubmit={recogerForm}>
+        <div className="titulo">
+          <label htmlFor="titulo">Título</label>
+          <div className="sec-2">
+            <span className="material-symbols-outlined">title</span>
+            <input
+              type="text"
+              name="titulo"
+              id="titulo"
+              placeholder="Título"
+              defaultValue={
+                articuloPadre.editando ? articuloPadre.articuloEdit.titulo : ""
+              }
+            />
           </div>
-          <div className="cuerpo">
-            <label htmlFor="cuerpo">Cuerpo</label>
-            <div className="sec-2">
-              <span className="material-symbols-outlined">description</span>
-              {editando ? (
-                <textarea
-                  name="cuerpo"
-                  id="cuerpo"
-                  placeholder="cuerpo"
-                  rows="4"
-                  cols="50"
-                  defaultValue={articuloEdit.cuerpo}
-                />
-              ) : (
-                <textarea
-                  name="cuerpo"
-                  id="cuerpo"
-                  placeholder="cuerpo"
-                  rows="4"
-                  cols="50"
-                  defaultValue=""
-                />
-              )}
-            </div>
+        </div>
+
+        <div className="cuerpo">
+          <label htmlFor="cuerpo">Cuerpo</label>
+          <div className="sec-2">
+            <span className="material-symbols-outlined">description</span>
+            <textarea
+              name="cuerpo"
+              id="cuerpo"
+              placeholder="Cuerpo"
+              rows="4"
+              cols="50"
+              defaultValue={
+                articuloPadre.editando ? articuloPadre.articuloEdit.cuerpo : ""
+              }
+            />
           </div>
-          <input className="articulo" type="submit" />
-          {editando ? (
-            <button onClick={cancelarEdicion}>Cancelar Edición</button>
-          ) : (
-            ""
-          )}
-        </form>
-      </div>
-    </>
+        </div>
+
+        <input className="articulo" type="submit" value="Guardar" />
+
+        {articuloPadre.editando && (
+          <button onClick={onCancelarEdicion}>Cancelar Edición</button>
+        )}
+      </form>
+    </div>
   );
 };

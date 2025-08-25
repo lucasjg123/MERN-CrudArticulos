@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { FormArticulo } from "./FormArticulo";
 
 export const ResultadoArticulos = () => {
-  const [usuarioAuth, setUsuarioAuth] = useContext(AuthContext);
+  const [usuarioAuth] = useContext(AuthContext);
   const [articulosState, setArticulosState] = useState([]);
   const [editando, setEditando] = useState(false);
   const [articuloEdit, setArticuloEdit] = useState({});
-  const [triggerFetch, setTriggerFetch] = useState(false); // Para forzar la actualización
+  const [triggerFetch, setTriggerFetch] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const ResultadoArticulos = () => {
       );
 
       if (peticion.status === 200) {
-        setTriggerFetch((prev) => !prev); // Cambiar `triggerFetch` para actualizar los artículos
+        setTriggerFetch((prev) => !prev);
       } else {
         console.log("Error al eliminar el artículo");
       }
@@ -60,10 +60,14 @@ export const ResultadoArticulos = () => {
     }
   };
 
-  const editar = async (articulo) => {
-    console.log("editar accion");
+  const editar = (articulo) => {
     setEditando(true);
     setArticuloEdit(articulo);
+  };
+
+  const cancelarEdicion = () => {
+    setEditando(false);
+    setArticuloEdit({});
   };
 
   return (
@@ -88,7 +92,6 @@ export const ResultadoArticulos = () => {
                 <td>{articulo.cuerpo}</td>
                 <td>{articulo.usuario}</td>
                 <td>
-                  {" "}
                   <i onClick={() => borrar(articulo._id)} className="delete">
                     <span className="material-symbols-outlined">delete</span>
                   </i>
@@ -101,9 +104,11 @@ export const ResultadoArticulos = () => {
           })}
         </tbody>
       </table>
+
       <FormArticulo
         articuloPadre={{ articuloEdit, editando }}
-        onActualizarTabla={() => setTriggerFetch((prev) => !prev)} // Cambiar `triggerFetch` para forzar el refetch
+        onActualizarTabla={() => setTriggerFetch((prev) => !prev)}
+        onCancelarEdicion={cancelarEdicion}
       />
     </>
   );
