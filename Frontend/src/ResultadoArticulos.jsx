@@ -5,53 +5,91 @@ import { useNavigate } from "react-router-dom";
 import { FormArticulo } from "./FormArticulo";
 
 export const ResultadoArticulos = () => {
-  const [usuarioAuth] = useContext(AuthContext);
-  const [articulosState, setArticulosState] = useState([]);
+  const [auth] = useContext(AuthContext);
+  const [articulos, setArticulos] = useState([]);
   const [editando, setEditando] = useState(false);
   const [articuloEdit, setArticuloEdit] = useState({});
   const [triggerFetch, setTriggerFetch] = useState(false);
   const navigate = useNavigate();
+  const backendUrl = "http://localhost:1234/api/articulos";
 
+  // Obtener artículos
   useEffect(() => {
-    const resultados = async () => {
+    const fetchArticulos = async () => {
       try {
-        const peticion = await fetch("http://localhost:1234/api/articulos", {
+        const res = await fetch(backendUrl, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: usuarioAuth.token,
+            Authorization: auth.token,
           },
         });
 
-        const datos = await peticion.json();
+        const data = await res.json();
 
-        if (peticion.status !== 404) setArticulosState(datos);
+        if (res.status !== 404) setArticulos(data);
         else {
-          navigate("/login");
+          navigate("/login"); // xq te manda al login si no hay articulos?
         }
       } catch (e) {
-        console.log(e);
+        console.error("Error cargando artículos:", e);
       }
     };
 
-    resultados();
-  }, [usuarioAuth.token, navigate, triggerFetch]);
+    fetchArticulos();
+  }, [auth.token, navigate, triggerFetch]);
+
+  // Definimos una función que se encarga de actualizar el estado
+  const onActualizarTabla = () => setTriggerFetch((prev) => !prev);
+
+  // Crear o actualizar. Incorporar delete
+  const handleSubmit = async (articulo) => {
+    // cargamos el noombre del usuario
+    articulo = { ...articulo, usuario: auth.nick };
+    try {
+      let url = backendUrl;
+      let method = "POST"; // hacer un enum para esta mierda
+
+      if (editando && articuloEdit) {
+        url = `${backendUrl}/${articuloEdit._id}`;
+        method = "PUT";
+      }
+
+      console.log("Articulo a enviar:", articulo);
+      const res = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: auth.token,
+        },
+        body: JSON.stringify(articulo),
+      });
+
+      console.log("Respuesta del servidor:", res);
+      if (!res.ok) throw new Error("Error en la petición");
+
+      onActualizarTabla();
+
+      // reestablecemos valores default de los estados
+      setEditando(false);
+      setArticuloEdit({});
+    } catch (error) {
+      console.error("Error guardando artículo:", error);
+    }
+  };
 
   const borrar = async (id) => {
     try {
-      const peticion = await fetch(
-        `http://localhost:1234/api/articulos/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: usuarioAuth.token,
-          },
-        }
-      );
+      const res = await fetch(`http://localhost:1234/api/articulos/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: auth.token,
+        },
+      });
 
-      if (peticion.status === 200) {
-        setTriggerFetch((prev) => !prev);
+      if (res.status === 200) {
+        onActualizarTabla();
       } else {
         console.log("Error al eliminar el artículo");
       }
@@ -60,6 +98,7 @@ export const ResultadoArticulos = () => {
     }
   };
 
+  // sólo setea el articulo seleccionado para q lo tenga el hijo
   const editar = (articulo) => {
     setEditando(true);
     setArticuloEdit(articulo);
@@ -85,7 +124,7 @@ export const ResultadoArticulos = () => {
           </tr>
         </thead>
         <tbody>
-          {articulosState.map((articulo) => {
+          {articulos.map((articulo) => {
             return (
               <tr key={articulo._id}>
                 <td>{articulo.titulo}</td>
@@ -106,8 +145,9 @@ export const ResultadoArticulos = () => {
       </table>
 
       <FormArticulo
-        articuloPadre={{ articuloEdit, editando }}
-        onActualizarTabla={() => setTriggerFetch((prev) => !prev)}
+        articuloEdit={articuloEdit}
+        editando={editando}
+        onSubmit={handleSubmit}
         onCancelarEdicion={cancelarEdicion}
       />
     </>

@@ -1,72 +1,25 @@
-import { useContext, useState } from "react";
 import "./FormArticulo.css";
-import { AuthContext } from "./ProveedorContexto";
 
 export const FormArticulo = ({
-  articuloPadre,
-  onActualizarTabla,
+  articuloEdit,
+  editando,
+  onSubmit,
   onCancelarEdicion,
 }) => {
-  const [auth] = useContext(AuthContext);
-
-  const recogerForm = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!e.target.titulo.value.trim() || !e.target.cuerpo.value.trim()) {
+      alert("Todos los campos son obligatorios");
+      return;
+    }
     let articulo = {
       titulo: e.target.titulo.value,
       cuerpo: e.target.cuerpo.value,
     };
 
-    if (!articuloPadre.editando) {
-      guardarArticulo(articulo);
-    } else {
-      editarArticulo(articulo, articuloPadre.articuloEdit._id);
-    }
-
-    e.target.reset();
-  };
-
-  const guardarArticulo = async (articulo) => {
-    let articuloCompleto = { ...articulo, usuario: auth.nick };
-    try {
-      const peticion = await fetch(`http://localhost:1234/api/articulos`, {
-        method: "POST",
-        body: JSON.stringify(articuloCompleto),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: auth.token,
-        },
-      });
-
-      if (peticion.status === 201) {
-        onActualizarTabla();
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const editarArticulo = async (articulo, id) => {
-    let articuloCompleto = { ...articulo, usuario: auth.nick };
-    try {
-      const peticion = await fetch(
-        `http://localhost:1234/api/articulos/${id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify(articuloCompleto),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: auth.token,
-          },
-        }
-      );
-
-      if (peticion.status === 200) {
-        onActualizarTabla();
-        onCancelarEdicion();
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    onSubmit(articulo); // pasamos al padre
+    e.target.reset(); // limpiamos campos del form
   };
 
   return (
@@ -86,11 +39,9 @@ export const FormArticulo = ({
         rel="stylesheet"
       ></link>
       <h2>INTRODUCE ARTÍCULO</h2>
-      {articuloPadre.editando && (
-        <h3 style={{ color: "red" }}>EDITANDO ARTICULO</h3>
-      )}
+      {editando && <h3 style={{ color: "red" }}>EDITANDO ARTICULO</h3>}
 
-      <form onSubmit={recogerForm}>
+      <form onSubmit={handleSubmit}>
         <div className="titulo">
           <label htmlFor="titulo">Título</label>
           <div className="sec-2">
@@ -100,9 +51,7 @@ export const FormArticulo = ({
               name="titulo"
               id="titulo"
               placeholder="Título"
-              defaultValue={
-                articuloPadre.editando ? articuloPadre.articuloEdit.titulo : ""
-              }
+              defaultValue={editando ? articuloEdit.titulo : ""}
             />
           </div>
         </div>
@@ -117,16 +66,14 @@ export const FormArticulo = ({
               placeholder="Cuerpo"
               rows="4"
               cols="50"
-              defaultValue={
-                articuloPadre.editando ? articuloPadre.articuloEdit.cuerpo : ""
-              }
+              defaultValue={editando ? articuloEdit.cuerpo : ""}
             />
           </div>
         </div>
 
         <input className="articulo" type="submit" value="Guardar" />
 
-        {articuloPadre.editando && (
+        {editando && (
           <button onClick={onCancelarEdicion}>Cancelar Edición</button>
         )}
       </form>
