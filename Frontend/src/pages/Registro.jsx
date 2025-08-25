@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import "./Registro.css";
+import "./css/Registro.css";
 
 export const Registro = () => {
   const [formulario, setFormulario] = useState({});

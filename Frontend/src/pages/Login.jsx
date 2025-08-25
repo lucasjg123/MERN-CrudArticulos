@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import "./Login.css";
-import { AuthContext } from "./ProveedorContexto";
+import "./css/Login.css";
+import { AuthContext } from "../context/ProveedorContexto";
 
 export const Login = () => {
   const [formulario, setFormulario] = useState({});

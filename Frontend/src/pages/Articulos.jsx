@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "./ProveedorContexto";
-import "./ResultadoArticulos.css";
+import { AuthContext } from "../context/ProveedorContexto";
+import "./css/Articulos.css";
 import { useNavigate } from "react-router-dom";
-import { FormArticulo } from "./FormArticulo";
+import { FormArticulo } from "../components/FormArticulo";
 
-export const ResultadoArticulos = () => {
+export const Articulos = () => {
   const [auth] = useContext(AuthContext);
   const [articulos, setArticulos] = useState([]);
   const [editando, setEditando] = useState(false);
@@ -111,45 +111,47 @@ export const ResultadoArticulos = () => {
 
   return (
     <>
-      <table id="tabla">
-        <thead>
-          <tr>
-            <th colSpan="7">Artículos</th>
-          </tr>
-          <tr>
-            <th>Título</th>
-            <th>Cuerpo</th>
-            <th>Usuario</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {articulos.map((articulo) => {
-            return (
-              <tr key={articulo._id}>
-                <td>{articulo.titulo}</td>
-                <td>{articulo.cuerpo}</td>
-                <td>{articulo.usuario}</td>
-                <td>
-                  <i onClick={() => borrar(articulo._id)} className="delete">
-                    <span className="material-symbols-outlined">delete</span>
-                  </i>
-                  <i onClick={() => editar(articulo)} className="edit">
-                    <span className="material-symbols-outlined">edit</span>
-                  </i>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div id="elementos">
+        <table id="tabla">
+          <thead>
+            <tr>
+              <th colSpan="7">Artículos</th>
+            </tr>
+            <tr>
+              <th>Título</th>
+              <th>Cuerpo</th>
+              <th>Usuario</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {articulos.map((articulo) => {
+              return (
+                <tr key={articulo._id}>
+                  <td>{articulo.titulo}</td>
+                  <td>{articulo.cuerpo}</td>
+                  <td>{articulo.usuario}</td>
+                  <td>
+                    <i onClick={() => borrar(articulo._id)} className="delete">
+                      <span className="material-symbols-outlined">delete</span>
+                    </i>
+                    <i onClick={() => editar(articulo)} className="edit">
+                      <span className="material-symbols-outlined">edit</span>
+                    </i>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
 
-      <FormArticulo
-        articuloEdit={articuloEdit}
-        editando={editando}
-        onSubmit={handleSubmit}
-        onCancelarEdicion={cancelarEdicion}
-      />
+        <FormArticulo
+          articuloEdit={articuloEdit}
+          editando={editando}
+          onSubmit={handleSubmit}
+          onCancelarEdicion={cancelarEdicion}
+        />
+      </div>
     </>
   );
 };

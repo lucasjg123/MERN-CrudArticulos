@@ -1,4 +1,4 @@
-import "./FormArticulo.css";
+import "./css/FormArticulo.css";
 
 export const FormArticulo = ({
   articuloEdit,
