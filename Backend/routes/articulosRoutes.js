@@ -8,7 +8,7 @@ export const Enrutador = (modelo) => {
 
   articuloRouter.get("/", controlador.getAll);
 
-  articuloRouter.get("/:id", controlador.getOneById);
+  articuloRouter.get("/:id", controlador.getOneByID);
 
   articuloRouter.delete("/:id", controlador.delete);
 

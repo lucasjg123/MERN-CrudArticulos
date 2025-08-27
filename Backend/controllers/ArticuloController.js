@@ -10,7 +10,7 @@ export class ArticuloController {
     if (articulos) response.json(articulos);
     else response.status(404).json({ error: "No hay articulos" });
   };
-  getOneById = async (request, response) => {
+  getOneByID = async (request, response) => {
     const id = request.params.id;
     const articulo = await this.modelo.getOneByID(id);
 
