@@ -42,7 +42,7 @@ export class FilesController {
   };
 
   create = async (req, res) => {
-    const result = await uploadFile(req.files.file);
+    const result = await this.modelo.create(req.files.file);
     res.json({ result });
   };
 }

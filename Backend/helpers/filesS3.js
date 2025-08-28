@@ -1,3 +1,4 @@
+// ESO SERIA EL MODEL
 // lo agrego en helpers ya q es una fuente externa a mi base de datos
 import {
   S3Client,
@@ -24,61 +25,63 @@ const client = new S3Client({
   },
 });
 
-export async function uploadFile(file) {
-  const stream = fs.createReadStream(file.tempFilePath); // leemos el archivo
+export class FileS3 {
+  static async uploadFile(file) {
+    const stream = fs.createReadStream(file.tempFilePath); // leemos el archivo
 
-  const uploadParams = {
-    Bucket: AWS_BUCKET_NAME,
-    Key: file.name,
-    Body: stream,
-  };
+    const uploadParams = {
+      Bucket: AWS_BUCKET_NAME,
+      Key: file.name,
+      Body: stream,
+    };
 
-  try {
-    const result = await client.send(new PutObjectCommand(uploadParams)); // enviamos el archivo a S3
-    // Una vez que se ha subido el archivo a S3, lo borramos del servidor
-    fs.unlinkSync(file.tempFilePath); // Borra el archivo del directorio 'uploads'
-    return result;
-  } catch (error) {
-    console.error("Error subiendo el archivo:", error);
-    throw error; // Si hay un error, no borra el archivo
+    try {
+      const result = await client.send(new PutObjectCommand(uploadParams)); // enviamos el archivo a S3
+      // Una vez que se ha subido el archivo a S3, lo borramos del servidor
+      fs.unlinkSync(file.tempFilePath); // Borra el archivo del directorio 'uploads'
+      return result;
+    } catch (error) {
+      console.error("Error subiendo el archivo:", error);
+      throw error; // Si hay un error, no borra el archivo
+    }
   }
-}
 
-export async function getFiles() {
-  const command = new ListObjectsCommand({
-    Bucket: AWS_BUCKET_NAME,
-  });
-  return await client.send(command);
-}
+  static async getAll() {
+    const command = new ListObjectsCommand({
+      Bucket: AWS_BUCKET_NAME,
+    });
+    return await client.send(command);
+  }
 
-export async function getFile(fileName) {
-  const command = new GetObjectCommand({
-    Bucket: AWS_BUCKET_NAME,
-    Key: fileName,
-  });
-  return await client.send(command);
-}
-
-export async function downloadFile(fileName) {
-  try {
-    // Crear el comando para obtener el archivo de S3
+  static async getOneByID(fileName) {
     const command = new GetObjectCommand({
       Bucket: AWS_BUCKET_NAME,
       Key: fileName,
     });
-
-    // Obtener el archivo desde S3
     return await client.send(command);
-  } catch (error) {
-    console.error("Error al intentar descargar el archivo:", error);
-    res.status(500).json({ error: "No se pudo descargar el archivo" });
   }
-}
 
-export async function getFileURL(fileName) {
-  const command = new GetObjectCommand({
-    Bucket: AWS_BUCKET_NAME,
-    Key: fileName,
-  });
-  return await getSignedUrl(client, command, { expiresIn: 3600 });
+  static async downloadFile(fileName) {
+    try {
+      // Crear el comando para obtener el archivo de S3
+      const command = new GetObjectCommand({
+        Bucket: AWS_BUCKET_NAME,
+        Key: fileName,
+      });
+
+      // Obtener el archivo desde S3
+      return await client.send(command);
+    } catch (error) {
+      console.error("Error al intentar descargar el archivo:", error);
+      res.status(500).json({ error: "No se pudo descargar el archivo" });
+    }
+  }
+
+  static async getFileURL(fileName) {
+    const command = new GetObjectCommand({
+      Bucket: AWS_BUCKET_NAME,
+      Key: fileName,
+    });
+    return await getSignedUrl(client, command, { expiresIn: 3600 });
+  }
 }

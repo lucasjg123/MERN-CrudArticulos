@@ -1,16 +1,24 @@
 import { Router } from "express";
 import fileUpload from "express-fileupload";
+import { FilesController } from "../controllers/FilesController.js";
 
-export const filesRouter = () => {
-  //const controlador =
-  const filesRouter = Router();
+export const FilesRouter = (modelo) => {
+  const controlador = new FilesController(modelo);
+  const FilesRouter = Router();
 
-  filesRouter.get("/"); // getAll
-  filesRouter.get("/:id"); // getOneById
-  filesRouter.get("/downloadfile/:id"); // getOneById
-  filesRouter.delete("/:id"); // delete
-  filesRouter.post("/"); // create
-  filesRouter.put("/:id"); // update
+  FilesRouter.use(
+    fileUpload({
+      useTempFiles: true,
+      tempFileDir: "./uploads",
+    })
+  );
 
-  return filesRouter;
+  FilesRouter.get("/", controlador.getAll); // getAll
+  FilesRouter.get("/:id", controlador.getOneByID); // getOneById
+  FilesRouter.get("/downloadfile/:id", controlador.download); // getOneById
+  // FilesRouter.delete("/:id"); // delete ToDo
+  FilesRouter.post("/", controlador.create); // create
+  // FilesRouter.put("/:id"); // update ToDo
+
+  return FilesRouter;
 };
