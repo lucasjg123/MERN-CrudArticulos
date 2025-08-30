@@ -13,6 +13,7 @@ import {
   AWS_BUCKET_NAME,
 } from "./configS3.js";
 import fs from "fs"; // modulo para trabajar con archivos de nodejs
+import path from "path"; // para extraer extension del file
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -26,13 +27,20 @@ const client = new S3Client({
 });
 
 export class FileS3 {
-  static async uploadFile(file) {
+  static async create(file, id) {
     const stream = fs.createReadStream(file.tempFilePath); // leemos el archivo
+
+    // Supongamos que `file` es el archivo cargado
+    const fileName = file.name;
+    const fileExtension = path.extname(fileName); // Obtiene la extensión (.jpg, .pdf, etc.)
+
+    // Ahora usas el `id` y la extensión del archivo
+    const fileKey = `${id}${fileExtension}`;
 
     const uploadParams = {
       Bucket: AWS_BUCKET_NAME,
-      Key: file.name,
-      Body: stream,
+      Key: fileKey, // Aquí el `id` con la extensión
+      Body: stream, // Aquí el stream de datos del archivo
     };
 
     try {
