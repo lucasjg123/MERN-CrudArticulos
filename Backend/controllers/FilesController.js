@@ -54,7 +54,7 @@ export class FilesController {
       // Aquí puedes usar el 'id' y 'file' para realizar la acción que necesites
       const result = await this.modelo.create(req.files.file, id); // Aquí pasas el 'id' al modelo
       // Respuesta con el resultado
-      res.json({ result });
+      res.json(result);
     } catch (error) {
       console.error("Error durante la carga:", error);
       res.status(500).json({ message: "Error al cargar el archivo." });

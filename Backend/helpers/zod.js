@@ -6,6 +6,7 @@ const articuloSchema = zod.object({
   titulo: zod.string(),
   cuerpo: zod.string(),
   usuario: zod.string(),
+  url: zod.string().optional(), // Agregamos el campo 'url' como opcional
 });
 
 // valida todo el obj

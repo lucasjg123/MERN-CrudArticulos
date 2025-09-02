@@ -61,6 +61,7 @@ export const Articulos = () => {
               <th>Título</th>
               <th>Cuerpo</th>
               <th>Usuario</th>
+              <th>Imagen</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -70,6 +71,16 @@ export const Articulos = () => {
                 <td>{articulo.titulo}</td>
                 <td>{articulo.cuerpo}</td>
                 <td>{articulo.usuario}</td>
+                <td style={{ width: "200px" }}>
+                  {/* Mostrar la imagen si hay una URL */}
+                  {articulo.url && (
+                    <img
+                      src={articulo.url}
+                      alt={articulo.titulo}
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                  )}
+                </td>
                 <td>
                   <i onClick={() => borrar(articulo._id)} className="delete">
                     <span className="material-symbols-outlined">delete</span>

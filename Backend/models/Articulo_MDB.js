@@ -9,9 +9,10 @@ conexion();
 const articuloSchema = new Schema(
   {
     // Definición de los campos del artículo
-    titulo: String, // Título del artículo
-    cuerpo: String, // Contenido del artículo
-    usuario: String, // Usuario asociado al artículo
+    titulo: { type: String, required: true }, // Título del artículo
+    cuerpo: { type: String, required: true }, // Contenido del artículo
+    usuario: { type: String, required: true }, // Usuario asociado al artículo
+    url: { type: String, required: false }, // URL opcional
   },
   {
     versionKey: false, // Desactivamos la versión automática (_v) en los documentos de la colección

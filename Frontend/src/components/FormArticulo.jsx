@@ -18,6 +18,12 @@ export const FormArticulo = ({
       cuerpo: e.target.cuerpo.value,
     };
 
+    // Obtener la imagen si está seleccionada
+    const archivo = e.target.imagen.files[0];
+    if (archivo) {
+      articulo.imagen = archivo; // Si hay un archivo, lo agregamos al objeto
+    }
+
     onSubmit(articulo); // pasamos al padre
     e.target.reset(); // limpiamos campos del form
   };
@@ -67,6 +73,20 @@ export const FormArticulo = ({
               rows="4"
               cols="50"
               defaultValue={editando ? articuloEdit.cuerpo : ""}
+            />
+          </div>
+        </div>
+
+        {/* Campo de imagen opcional */}
+        <div className="imagen">
+          <label htmlFor="imagen">Imagen (opcional)</label>
+          <div className="sec-2">
+            <span className="material-symbols-outlined">image</span>
+            <input
+              type="file"
+              name="imagen"
+              id="imagen"
+              accept="image/*" // Aceptar solo imágenes
             />
           </div>
         </div>

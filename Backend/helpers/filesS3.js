@@ -14,6 +14,7 @@ import {
 } from "./configS3.js";
 import fs from "fs"; // modulo para trabajar con archivos de nodejs
 import path from "path"; // para extraer extension del file
+import mime from "mime-types";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -28,29 +29,38 @@ const client = new S3Client({
 
 export class FileS3 {
   static async create(file, id) {
-    const stream = fs.createReadStream(file.tempFilePath); // leemos el archivo
+    const stream = fs.createReadStream(file.tempFilePath);
 
-    // Supongamos que `file` es el archivo cargado
     const fileName = file.name;
-    const fileExtension = path.extname(fileName); // Obtiene la extensión (.jpg, .pdf, etc.)
-
-    // Ahora usas el `id` y la extensión del archivo
+    const fileExtension = path.extname(fileName);
     const fileKey = `${id}${fileExtension}`;
+
+    // Detectar el tipo MIME correcto
+    const contentType =
+      mime.lookup(fileExtension) || "application/octet-stream";
 
     const uploadParams = {
       Bucket: AWS_BUCKET_NAME,
-      Key: fileKey, // Aquí el `id` con la extensión
-      Body: stream, // Aquí el stream de datos del archivo
+      Key: fileKey,
+      Body: stream,
+      ContentType: contentType,
     };
 
     try {
-      const result = await client.send(new PutObjectCommand(uploadParams)); // enviamos el archivo a S3
-      // Una vez que se ha subido el archivo a S3, lo borramos del servidor
-      fs.unlinkSync(file.tempFilePath); // Borra el archivo del directorio 'uploads'
-      return result;
+      await client.send(new PutObjectCommand(uploadParams));
+
+      // Construimos la URL pública
+      const publicUrl = `https://${AWS_BUCKET_NAME}.s3.${AWS_BUCKET_REGION}.amazonaws.com/${fileKey}`;
+
+      return {
+        key: fileKey,
+        url: publicUrl,
+      };
     } catch (error) {
       console.error("Error subiendo el archivo:", error);
-      throw error; // Si hay un error, no borra el archivo
+      throw error;
+    } finally {
+      fs.unlinkSync(file.tempFilePath);
     }
   }
 
