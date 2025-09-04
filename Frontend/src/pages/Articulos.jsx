@@ -36,7 +36,8 @@ export const Articulos = () => {
   };
 
   const borrar = async (id) => {
-    await remove(id);
+    if (window.confirm("¿Estas seguro de eliminar el articulo?"))
+      await remove(id);
   };
 
   const editar = (articulo) => {
