@@ -92,8 +92,17 @@ export function useCrud(baseUrl, token) {
 
   // Eliminar un artículo
   const remove = useCallback(
-    async (id) => {
+    async (id, url) => {
+      // eliminamos el articulo
       await apiFetch(`${baseUrl}/${id}`, { method: "DELETE" });
+      // eliminamos la imagen
+      if (url !== undefined) {
+        const fileName = url.split("/").pop();
+        await apiFetch(`http://localhost:1234/api/files/${fileName}`, {
+          method: "DELETE",
+        });
+      }
+
       await getAll();
     },
     [apiFetch, baseUrl, getAll]

@@ -16,6 +16,19 @@ export class FilesController {
   };
 
   //delete = ToDo
+  delete = async (req, res) => {
+    try {
+      const id = req.params.id;
+      if (!id) return res.status(400).json({ message: "ID is required." });
+
+      const result = await this.modelo.delete(id); // Aquí pasas el 'id' al modelo
+      // Respuesta con el resultado
+      res.json(result);
+    } catch (error) {
+      console.error("Error durante la carga:", error);
+      res.status(500).json({ message: "Error al cargar el archivo." });
+    }
+  };
 
   // put ToDo. podria ser eliminar y crear uno nnuevo
 

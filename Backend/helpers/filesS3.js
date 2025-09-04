@@ -5,6 +5,7 @@ import {
   PutObjectCommand,
   ListObjectsCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import {
   AWS_BUCKET_REGION,
@@ -101,5 +102,20 @@ export class FileS3 {
       Key: fileName,
     });
     return await getSignedUrl(client, command, { expiresIn: 3600 });
+  }
+  static async delete(fileName) {
+    const deleteParams = {
+      Bucket: AWS_BUCKET_NAME,
+      Key: fileName, // El archivo que se desea eliminar
+    };
+    try {
+      // Ejecuta el comando de eliminación
+      await client.send(new DeleteObjectCommand(deleteParams));
+      console.log(`Archivo  eliminado con éxito.`);
+      return { message: `Archivo eliminado con éxito.` };
+    } catch (error) {
+      console.error("Error al eliminar el archivo:", error);
+      throw error;
+    }
   }
 }

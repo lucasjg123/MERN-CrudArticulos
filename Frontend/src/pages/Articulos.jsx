@@ -35,9 +35,9 @@ export const Articulos = () => {
     }
   };
 
-  const borrar = async (id) => {
+  const borrar = async (id, url) => {
     if (window.confirm("¿Estas seguro de eliminar el articulo?"))
-      await remove(id);
+      await remove(id, url);
   };
 
   const editar = (articulo) => {
@@ -83,7 +83,10 @@ export const Articulos = () => {
                   )}
                 </td>
                 <td>
-                  <i onClick={() => borrar(articulo._id)} className="delete">
+                  <i
+                    onClick={() => borrar(articulo._id, articulo.url)}
+                    className="delete"
+                  >
                     <span className="material-symbols-outlined">delete</span>
                   </i>
                   <i onClick={() => editar(articulo)} className="edit">

@@ -16,7 +16,7 @@ export const FilesRouter = (modelo) => {
   FilesRouter.get("/", controlador.getAll); // getAll
   FilesRouter.get("/:id", controlador.getOneByID); // getOneById
   FilesRouter.get("/downloadfile/:id", controlador.download); // getOneById
-  // FilesRouter.delete("/:id"); // delete ToDo
+  FilesRouter.delete("/:id", controlador.delete); // delete ToDo
   FilesRouter.post("/", controlador.create); // create
   // FilesRouter.put("/:id"); // update ToDo
 
