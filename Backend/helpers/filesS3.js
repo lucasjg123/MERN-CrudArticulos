@@ -104,6 +104,7 @@ export class FileS3 {
     return await getSignedUrl(client, command, { expiresIn: 3600 });
   }
   static async delete(fileName) {
+    console.log("🗑️ Borrando de S3 con key:", fileName);
     const deleteParams = {
       Bucket: AWS_BUCKET_NAME,
       Key: fileName, // El archivo que se desea eliminar

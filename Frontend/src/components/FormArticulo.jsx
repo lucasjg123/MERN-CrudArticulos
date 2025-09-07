@@ -16,6 +16,7 @@ export const FormArticulo = ({
     let articulo = {
       titulo: e.target.titulo.value,
       cuerpo: e.target.cuerpo.value,
+      ...(articuloEdit.url && { url: articuloEdit.url }),
     };
 
     // Obtener la imagen si está seleccionada

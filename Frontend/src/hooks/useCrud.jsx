@@ -1,9 +1,12 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useS3 } from "./useS3";
 
 export function useCrud(baseUrl, token) {
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
+  // Dentro de useCrud
+  const { uploadFile, deleteFile } = useS3(token);
 
   // Func principal q se comunica con el backend
   const apiFetch = useCallback(
@@ -34,6 +37,7 @@ export function useCrud(baseUrl, token) {
   const getAll = useCallback(async () => {
     const data = await apiFetch(baseUrl, { method: "GET" });
     if (data) setItems(data);
+    console.log("articulos:", data);
   }, [apiFetch, baseUrl]);
 
   // Crear un artículo
@@ -52,15 +56,7 @@ export function useCrud(baseUrl, token) {
       if (archivo) {
         try {
           // Subir la imagen a S3
-          const formData = new FormData();
-          formData.append("file", archivo);
-          formData.append("id", createdItem._id); // Usamos el id generado de Mongo
-
-          // Paso 3: Enviar la imagen al backend para que se suba a S3
-          const img = await apiFetch(`http://localhost:1234/api/files`, {
-            method: "POST",
-            body: formData, // No se necesita Content-Type, ya que es un FormData
-          });
+          const img = await uploadFile(archivo, createdItem._id);
           console.log("📂 Respuesta del backend al subir imagen:", img);
 
           //Paso 4: Actualizar el articulo con la url de la imagen
@@ -81,6 +77,21 @@ export function useCrud(baseUrl, token) {
   // Actualizar un artículo
   const update = useCallback(
     async (id, item) => {
+      if (item.imagen) {
+        console.log("quiere actualizar imagen");
+        const archivo = item.imagen;
+        delete item.imagen;
+        // eliminar luego volver a subir ya q al tener el mismo filename id pueden tener dif formato .jpg ejm
+        // Si ya tiene una imagen, la borrarmos
+        console.log("print del item", item);
+        if (item.url !== undefined) {
+          console.log("hola quiero borrar la imagen vieja");
+          await deleteFile(item.url);
+        }
+        // Subimos la imagen nueva
+        const img = await uploadFile(archivo, id);
+        item = { ...item, url: img.url };
+      } // guardar la url de la imgaen en el articulo
       await apiFetch(`${baseUrl}/${id}`, {
         method: "PUT",
         body: JSON.stringify(item),
@@ -96,12 +107,7 @@ export function useCrud(baseUrl, token) {
       // eliminamos el articulo
       await apiFetch(`${baseUrl}/${id}`, { method: "DELETE" });
       // eliminamos la imagen
-      if (url !== undefined) {
-        const fileName = url.split("/").pop();
-        await apiFetch(`http://localhost:1234/api/files/${fileName}`, {
-          method: "DELETE",
-        });
-      }
+      if (url !== undefined) await deleteFile(url);
 
       await getAll();
     },
